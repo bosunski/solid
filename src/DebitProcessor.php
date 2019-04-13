@@ -30,12 +30,17 @@ class DebitProcessor
      * Collects CLI Inputs
      *
      * @return stdClass
+     * @throws Exception
      */
     protected function collectInputs(): stdClass
     {
         global $argv;
 
         array_shift($argv);
+
+        if (empty($argv)) {
+            throw new Exception("You must provide amount and user ID");
+        }
 
         $consoleInputs = array_map(Closure::fromCallable([$this, 'formatInputs']), $argv);
 
