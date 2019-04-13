@@ -4,7 +4,16 @@ use Solid\DebitProcessor;
 
 require "vendor/autoload.php";
 
-$debitProcessor = new DebitProcessor();
+$validators = [
+    new \Solid\validators\ValidateAccountBalance(),
+    new \Solid\validators\ValidateUserPermission(),
+];
+
+$debitProcessor = new DebitProcessor(
+    new \Solid\Biller(),
+    new \Solid\UserRepository(),
+    $validators
+);
 
 try {
     $debitProcessor->processDebit();

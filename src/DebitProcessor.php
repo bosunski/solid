@@ -2,102 +2,55 @@
 
 namespace Solid;
 
-use Closure;
 use Exception;
-use stdClass;
+use Solid\Contracts\ValidatorInterface;
 
 class DebitProcessor
 {
+    private $biller;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    private $input;
+    /**
+     * @var ValidatorInterface
+     */
+    private $validators;
+
+    public function __construct(Biller $biller, UserRepository $userRepository, array $validators)
+    {
+        $this->biller = $biller;
+        $this->userRepository = $userRepository;
+        $this->input = new Input();
+        $this->validators = $validators;
+    }
+
     /**
      * @throws Exception
      */
     public function processDebit(): void
     {
-        $inputs = $this->collectInputs();
+        $inputs = $this->input->collectInputs();
 
-        $user = $this->getUser($inputs->id);
+        $user = $this->userRepository->getUser($inputs->id);
 
         if (!$user) {
             throw new Exception(sprintf("The user with the ID: %s doesn't exist!", $inputs->id));
         }
 
-        if ($this->bill($user->id, $inputs->amount)) {
+        $this->validate($user, $inputs);
+
+        if ($this->biller->bill($user->id, $inputs->amount)) {
             printf("User: %s has been billed: %d ✅ \n", $user->name, $inputs->amount);
         }
     }
 
-    /**
-     * Collects CLI Inputs
-     *
-     * @return stdClass
-     * @throws Exception
-     */
-    protected function collectInputs(): stdClass
+    protected function validate($user, $amount)
     {
-        global $argv;
-
-        array_shift($argv);
-
-        if (empty($argv)) {
-            throw new Exception("You must provide amount and user ID");
+        foreach ($this->validators as $validator) {
+            $validator->validate($user, $amount);
         }
-
-        $consoleInputs = array_map(Closure::fromCallable([$this, 'formatInputs']), $argv);
-
-        return (object) ['id' => $consoleInputs[0]['id'] ?? null, 'amount' => $consoleInputs[1]['amount'] ?? null];
-    }
-
-    /**
-     * Formats CLI inputs
-     *
-     * @param string $input
-     * @return array
-     */
-    protected function formatInputs(string $input): array
-    {
-        list($name, $value) = explode('=', str_replace('--', '', $input));
-
-        return [$name => $value];
-    }
-
-    /**
-     * @param int $userId
-     * @return stdClass|null
-     */
-    protected function getUser(int $userId)
-    {
-        $userStore = __DIR__ . DIRECTORY_SEPARATOR . "store/users.json";
-        $users = json_decode(file_get_contents($userStore));
-
-        foreach ($users as $user) {
-            if ($user->id === $userId) return $user;
-        }
-
-        return null;
-    }
-
-    /**
-     * Deducts an amount from User balance
-     *
-     * @param int $userId
-     * @param int $amount
-     * @return bool
-     */
-    public function bill(int $userId, int $amount): bool
-    {
-        $userStore = __DIR__ . DIRECTORY_SEPARATOR . "store/users.json";
-        $users = json_decode(file_get_contents($userStore));
-
-        // Find User
-        foreach ($users as $key => $user) {
-            if ($user->id === $userId) {
-                $users[$key]->balance = $users[$key]->balance - $amount;
-            }
-        }
-
-        return file_put_contents(
-            $userStore,
-            json_encode($users, JSON_PRETTY_PRINT)
-        ) ? true : false;
     }
 }
