@@ -11,7 +11,7 @@ class DebitProcessor
     /**
      * @throws Exception
      */
-    public function processDebit()
+    public function processDebit(): void
     {
         $inputs = $this->collectInputs();
 
@@ -51,6 +51,7 @@ class DebitProcessor
     protected function formatInputs(string $input): array
     {
         list($name, $value) = explode('=', str_replace('--', '', $input));
+
         return [$name => $value];
     }
 
