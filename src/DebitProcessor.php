@@ -39,7 +39,7 @@ class DebitProcessor
 
         $consoleInputs = array_map(Closure::fromCallable([$this, 'formatInputs']), $argv);
 
-        return (object) ['id' => $consoleInputs[0]['id'], 'amount' => $consoleInputs[1]['amount']];
+        return (object) ['id' => $consoleInputs[0]['id'] ?? null, 'amount' => $consoleInputs[1]['amount'] ?? null];
     }
 
     /**
