@@ -1,10 +1,11 @@
 <?php
 
+use Solid\Biller;
 use Solid\DebitProcessor;
 
 require "vendor/autoload.php";
 
-$debitProcessor = new DebitProcessor();
+$debitProcessor = new DebitProcessor(new Biller());
 
 try {
     $debitProcessor->processDebit();
