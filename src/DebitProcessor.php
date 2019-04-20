@@ -4,12 +4,13 @@ namespace Solid;
 
 use Exception;
 use Solid\Contracts\ValidatorInterface;
+use Solid\Contracts\UserRepositoryInterface;
 
 class DebitProcessor
 {
     private $biller;
     /**
-     * @var UserRepository
+     * @var JSONUserRepository
      */
     private $userRepository;
 
@@ -19,9 +20,10 @@ class DebitProcessor
      */
     private $validators;
 
-    public function __construct(Biller $biller, UserRepository $userRepository, array $validators)
+    public function __construct(Biller $biller, UserRepositoryInterface $userRepository, array $validators)
     {
         $this->biller = $biller;
+        $this->biller->setRepository($userRepository);
         $this->userRepository = $userRepository;
         $this->input = new Input();
         $this->validators = $validators;

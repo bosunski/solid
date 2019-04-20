@@ -1,6 +1,8 @@
 <?php
 
 use Solid\DebitProcessor;
+use Solid\FIleHandler;
+use Solid\GoogleCloudFileHandler;
 
 require "vendor/autoload.php";
 
@@ -11,7 +13,7 @@ $validators = [
 
 $debitProcessor = new DebitProcessor(
     new \Solid\Biller(),
-    new \Solid\UserRepository(),
+    new \Solid\JSONUserRepository(new FIleHandler()),
     $validators
 );
 
