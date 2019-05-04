@@ -2,13 +2,13 @@
     {
         "id": 1,
         "name": "Olatunbosun Egberinde",
-        "balance": 200000,
+        "balance": 199800,
         "canWithdraw": false
     },
     {
         "id": 2,
         "name": "James John",
-        "balance": 446000,
+        "balance": 442700,
         "canWithdraw": true
     }
 ]

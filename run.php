@@ -1,20 +1,17 @@
 <?php
 
 use Solid\DebitProcessor;
-use Solid\FIleHandler;
+use Solid\validators\ValidateAccountBalance;
+use Solid\validators\ValidateUserPermission;
 
-require "vendor/autoload.php";
+require "bootstrap/app.php";
 
 $validators = [
-    new \Solid\validators\ValidateAccountBalance(),
-    new \Solid\validators\ValidateUserPermission(),
+    new ValidateAccountBalance(),
+    new ValidateUserPermission(),
 ];
 
-$debitProcessor = new DebitProcessor(
-    new \Solid\Biller(),
-    new \Solid\JSONUserRepository(new FIleHandler()),
-    $validators
-);
+$debitProcessor = $container->get(DebitProcessor::class, ['validators' => $validators]);
 
 try {
     $debitProcessor->processDebit();

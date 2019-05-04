@@ -20,7 +20,7 @@ class DebitProcessor
      */
     private $validators;
 
-    public function __construct(Biller $biller, UserRepositoryInterface $userRepository, array $validators)
+    public function __construct(Biller $biller, UserRepositoryInterface $userRepository, array $validators = [])
     {
         $this->biller = $biller;
         $this->biller->setRepository($userRepository);
