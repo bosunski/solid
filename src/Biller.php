@@ -11,6 +11,11 @@ class Biller
      */
     private $userRepository;
 
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * Deducts an amount from User balance
      *
@@ -33,10 +38,5 @@ class Biller
         $this->userRepository->saveUsers(json_encode($users, JSON_PRETTY_PRINT));
 
         return true;
-    }
-
-    public function setRepository(UserRepositoryInterface $userRepository)
-    {
-        $this->userRepository = $userRepository;
     }
 }

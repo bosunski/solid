@@ -8,7 +8,6 @@ use Solid\Contracts\UserRepositoryInterface;
 
 class JSONUserRepository implements UserRepositoryInterface
 {
-
     private $file;
 
     public function __construct(FileSystem $file)
