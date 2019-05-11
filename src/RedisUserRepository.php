@@ -26,11 +26,16 @@ class RedisUserRepository implements UserRepositoryInterface, ConnectibleInterfa
         return null;
     }
 
-    public function saveUsers(string $users)
+    public function saveUser(string $users)
     {
         $this->client->set('users', $users);
 
         return true;
+    }
+
+    public function getUsers()
+    {
+        return json_decode($this->client->get('users'));
     }
 
     public function connect()

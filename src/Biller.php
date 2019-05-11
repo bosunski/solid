@@ -25,8 +25,7 @@ class Biller
      */
     public function bill(int $userId, int $amount): bool
     {
-        $userStore = __DIR__ . DIRECTORY_SEPARATOR . "store/users.json";
-        $users = json_decode(file_get_contents($userStore));
+        $users = $this->userRepository->getUsers();
 
         // Find User
         foreach ($users as $key => $user) {
@@ -35,7 +34,7 @@ class Biller
             }
         }
 
-        $this->userRepository->saveUsers(json_encode($users, JSON_PRETTY_PRINT));
+        $this->userRepository->saveUser(json_encode($users, JSON_PRETTY_PRINT));
 
         return true;
     }

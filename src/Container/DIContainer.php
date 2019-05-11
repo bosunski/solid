@@ -3,6 +3,7 @@
 namespace Solid\Container;
 
 
+use Closure;
 use Exception;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -39,8 +40,22 @@ class DIContainer implements ContainerInterface
         $this->instances[$key] = $concrete;
     }
 
+    /**
+     * @param $concrete
+     * @param array $defaultParameters
+     * @return mixed|object
+     * @throws \ReflectionException
+     * @throws Exception
+     */
     protected function resolve($concrete, $defaultParameters = [])
     {
+        if ($concrete instanceof Closure) {
+
+            array_push($defaultParameters, $this);
+
+            return call_user_func_array($concrete, $defaultParameters);
+        }
+
         $class = new ReflectionClass($concrete);
 
         if (!$class->isInstantiable()) {

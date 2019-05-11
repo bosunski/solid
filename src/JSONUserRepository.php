@@ -31,7 +31,7 @@ class JSONUserRepository implements UserRepositoryInterface
         return null;
     }
 
-    public function saveUsers(string $users)
+    public function saveUser(string $users)
     {
         $userStore = __DIR__ . DIRECTORY_SEPARATOR . "store/users.json";
         $this->file->write($userStore, $users);

@@ -6,5 +6,7 @@ interface UserRepositoryInterface
 {
     public function getUser(int $userId);
 
-    public function saveUsers(string $users);
+    public function saveUser(string $users);
+
+    public function getUsers();
 }
