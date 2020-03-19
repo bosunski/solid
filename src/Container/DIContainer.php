@@ -2,7 +2,6 @@
 
 namespace Solid\Container;
 
-
 use Exception;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -10,6 +9,8 @@ use ReflectionClass;
 class DIContainer implements ContainerInterface
 {
     protected $instances = [];
+
+    protected $shareObjects = [];
 
     public function has($key)
     {
@@ -23,7 +24,7 @@ class DIContainer implements ContainerInterface
         }
 
         try {
-            return $this->resolve($this->instances[$key], $parameters);
+            return $this->resolve($this->instances[$key], $parameters, $key);
         } catch (Exception $e) {
             echo $e->getMessage();
             exit;
@@ -39,8 +40,12 @@ class DIContainer implements ContainerInterface
         $this->instances[$key] = $concrete;
     }
 
-    protected function resolve($concrete, $defaultParameters = [])
+    protected function resolve($concrete, $defaultParameters = [], $abstract = null)
     {
+        if (array_key_exists($abstract, $this->shareObjects) && $this->shareObjects[$abstract]) {
+            return $this->shareObjects[$abstract];
+        }
+
         $class = new ReflectionClass($concrete);
 
         if (!$class->isInstantiable()) {
@@ -56,7 +61,13 @@ class DIContainer implements ContainerInterface
         $parameters = $constructor->getParameters();
         $dependencies = $this->resolveDependencies($parameters, $defaultParameters);
 
-        return $class->newInstanceArgs($dependencies);
+        $obj = $class->newInstanceArgs($dependencies);
+
+        if (array_key_exists($abstract, $this->shareObjects)) {
+            $this->shareObjects[$abstract] = $obj;
+        }
+
+        return $obj;
     }
 
     /**
@@ -94,5 +105,12 @@ class DIContainer implements ContainerInterface
     public function getInstances()
     {
         return $this->instances;
+    }
+
+    public function singleton($abstract, $concrete = null)
+    {
+        $this->shareObjects[$abstract] = null;
+
+        $this->set($abstract, $concrete);
     }
 }
